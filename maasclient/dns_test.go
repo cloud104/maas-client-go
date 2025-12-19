@@ -86,7 +86,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/dnsresources/",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_create.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_create_1.json")),
 		)
 
 		httpmock.RegisterResponder(
@@ -110,6 +110,32 @@ func TestGetDNSResources(t *testing.T) {
 	})
 
 	t.Run("create test-unit-2.maas", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/dnsresources/",
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_create_2.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPut,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_update_2.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_update_2.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodDelete,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewBytesResponder(204, nil),
+		)
+
 		// err := c.DNSResources().DNSResource(148).Delete(ctx)
 		// assert.Nil(t, err)
 		res, err := c.DNSResources().

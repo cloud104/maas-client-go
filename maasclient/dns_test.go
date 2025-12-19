@@ -189,6 +189,21 @@ func TestGetDNSResources(t *testing.T) {
 	})
 
 	t.Run("create test-unit-1.maas", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/dnsresources/",
+			httpmock.NewStringResponder(200, `{
+		}`),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodDelete,
+			"http://maas.test/api/2.0/dnsresources/201/",
+			httpmock.NewStringResponder(204, ``),
+		)
+
 		res, err := c.DNSResources().
 			Builder().
 			WithFQDN("test-unit-1.maas.sc").

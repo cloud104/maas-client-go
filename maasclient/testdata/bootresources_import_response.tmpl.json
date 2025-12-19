@@ -1,0 +1,27 @@
+{
+	"id": 99,
+	"name": "test-image",
+	"type": "Synced",
+	"architecture": "amd64/generic",
+	"subarches": "generic",
+	"sets": {
+		"20251219": {
+			"version": "20251219",
+			"label": "stable",
+			"size": %d,
+			"complete": false,
+			"progress": 0,
+			"files": {
+				"root-tgz": {
+					"filename": "ubuntu.tar.gz",
+					"filetype": "tgz",
+					"sha256": "%s",
+					"size": %d,
+					"complete": false,
+					"progress": 0,
+					"upload_uri": "/boot-resources/99/upload/"
+				}
+			}
+		}
+	}
+}

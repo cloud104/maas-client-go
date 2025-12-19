@@ -18,18 +18,86 @@ package maasclient
 
 import (
 	"context"
-	"os"
+	"net/http"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetDNSResources(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("no-options", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/dnsresources/?all=true",
+			httpmock.NewStringResponder(200, `[
+				{
+					"id": 1,
+					"fqdn": "host1.maas.test",
+					"address_ttl": 300,
+					"ip_addresses": [
+						{
+							"ip": "192.168.1.10",
+							"interface_set": [
+								{
+									"system_id": "sys-abc123",
+									"interface_id": "if-1",
+									"id": 1,
+									"name": "eth0",
+									"type": "physical",
+									"enabled": true,
+									"mac_address": "52:54:00:12:34:56",
+									"links": [
+										{
+											"id": "link-1",
+											"mode": "static",
+											"subnet": {
+												"id": 10,
+												"name": "subnet-10",
+												"space": "default",
+												"vlan": {
+													"id": 100,
+													"vid": 100,
+													"name": "vlan100",
+													"fabric_id": 1,
+													"fabric_name": "fabric-1",
+													"mtu": 1500,
+													"dhcp_on": true
+												},
+												"cidr": "192.168.1.0/24"
+											},
+											"ip_address": "192.168.1.10"
+										}
+									],
+									"children": [],
+									"vlan": {
+										"id": 100,
+										"vid": 100,
+										"name": "vlan100",
+										"fabric_id": 1,
+										"fabric_name": "fabric-1",
+										"mtu": 1500,
+										"dhcp_on": true
+									}
+								}
+							]
+						}
+					]
+				}
+			]`),
+		)
+
 		res, err := c.DNSResources().List(ctx, nil)
 		assert.Nil(t, err, "expecting nil error")
 		assert.NotNil(t, res, "expecting non-nil result")
@@ -74,14 +142,11 @@ func TestGetDNSResources(t *testing.T) {
 
 		err = res.Delete(ctx)
 		assert.Nil(t, err, "expecting nil error")
-
 	})
 
 	t.Run("create test-unit-2.maas", func(t *testing.T) {
-
-		//err := c.DNSResources().DNSResource(148).Delete(ctx)
-		//assert.Nil(t, err)
-
+		// err := c.DNSResources().DNSResource(148).Delete(ctx)
+		// assert.Nil(t, err)
 		res, err := c.DNSResources().
 			Builder().
 			WithFQDN("test-unit-2.maas.sc").
@@ -98,6 +163,7 @@ func TestGetDNSResources(t *testing.T) {
 		if err != nil {
 			t.Fatal("error", err)
 		}
+
 		assert.Equal(t, res.FQDN(), "test-unit-2.maas.sc")
 		assert.Equal(t, res.AddressTTL(), 10)
 		assert.NotEmpty(t, res.IPAddresses())
@@ -108,10 +174,9 @@ func TestGetDNSResources(t *testing.T) {
 
 		err = res.Delete(ctx)
 		assert.Nil(t, err, "expecting nil error")
-
 	})
 
-	//assert.Equal(t, 1, res.Count, "expecting 1 resource")
+	// assert.Equal(t, 1, res.Count, "expecting 1 resource")
 
 	//assert.Equal(t, 1, res.PagesCount, "expecting 1 PAGE found")
 	//

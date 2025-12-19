@@ -19,17 +19,18 @@ package maasclient
 import (
 	"context"
 	"math/rand"
+	"net/http"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"net/http"
 	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
 	rand.Seed(time.Now().UnixNano())
+
 	code := m.Run()
 	os.Exit(code)
 }
@@ -69,11 +70,15 @@ func TestClient_GetMachine(t *testing.T) {
 	assert.NotEmpty(t, res.DistroSeries())
 
 	assert.Zero(t, res.SwapSize())
-
 }
 
 func TestClient_AllocateMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
@@ -88,6 +93,14 @@ func TestClient_AllocateMachine(t *testing.T) {
 	}
 
 	t.Run("no-options", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_get_e37xxm.json")),
+		)
+
 		res, err := c.Machines().Allocator().Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -108,6 +121,14 @@ func TestClient_AllocateMachine(t *testing.T) {
 	})
 
 	t.Run("with-az", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_create_a12b3c.json")),
+		)
+
 		res, err := c.Machines().Allocator().WithZone("az1").Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -115,7 +136,6 @@ func TestClient_AllocateMachine(t *testing.T) {
 
 		releaseMachine(res)
 	})
-
 }
 
 func TestClient_DeployMachine(t *testing.T) {
@@ -137,6 +157,7 @@ func TestClient_DeployMachine(t *testing.T) {
 		if err != nil {
 			t.Fatal("Machine didn't allocate")
 		}
+
 		assert.NotNil(t, res)
 		assert.NotEmpty(t, res.SystemID())
 
@@ -157,7 +178,6 @@ func TestClient_DeployMachine(t *testing.T) {
 
 		releaseMachine(res)
 	})
-
 }
 
 func TestClient_UpdateMachine(t *testing.T) {
@@ -170,5 +190,4 @@ func TestClient_UpdateMachine(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, res)
 	assert.Equal(t, res.SwapSize(), 10)
-
 }

@@ -31,23 +31,25 @@ func TestSSHKeys(t *testing.T) {
 	httpmock.ActivateNonDefault(httpClient)
 	t.Cleanup(httpmock.DeactivateAndReset)
 
-	httpmock.RegisterResponder(
-		http.MethodGet,
-		"http://maas.test/api/2.0/account/prefs/sshkeys/",
-		httpmock.NewStringResponder(200, `[
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
+
+	ctx := context.Background()
+
+	t.Run("list sshkeys", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/account/prefs/sshkeys/",
+			httpmock.NewStringResponder(200, `[
 			{
 				"id": 1,
 				"key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtestkeymaterial test@example",
 				"keySource": "test@example"
 			}
 		]`),
-	)
+		)
 
-	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
-
-	ctx := context.Background()
-
-	t.Run("list sshkeys", func(t *testing.T) {
 		sshKeys, err := c.SSHKeys().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, sshKeys)

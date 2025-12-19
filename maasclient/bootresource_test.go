@@ -18,33 +18,168 @@ package maasclient
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"net/http"
 	"os"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBootResources(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("list-all", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/boot-resources/",
+			httpmock.NewStringResponder(200, `[
+				{
+					"id": 1,
+					"name": "ubuntu/jammy",
+					"type": "Synced",
+					"architecture": "amd64/generic",
+					"subarches": "generic",
+					"title": "Ubuntu 22.04 LTS (Jammy Jellyfish)",
+					"sets": {
+						"20231201": {
+							"version": "20231201",
+							"label": "jammy",
+							"size": 123456789,
+							"complete": true,
+							"progress": 1.0,
+							"files": {
+								"root-tgz": {
+									"filename": "root.tgz",
+									"filetype": "tgz",
+									"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+									"size": 123456789,
+									"complete": true,
+									"progress": 1.0,
+									"upload_uri": "http://maas.test/upload/root.tgz"
+								}
+							}
+						}
+					}
+				}
+			]`),
+		)
+
 		list, err := c.BootResources().List(ctx, nil)
 		assert.Nil(t, err, "expecting nil error")
 		assert.NotEmpty(t, list)
 	})
-	//
+
 	t.Run("list-by-id", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/boot-resources/7/",
+			httpmock.NewStringResponder(200, `{
+				"id": 7,
+				"name": "ubuntu/noble",
+				"type": "Synced",
+				"architecture": "amd64/generic",
+				"subarches": "generic",
+				"title": "Ubuntu 24.04 LTS (Noble Numbat)",
+				"sets": {
+					"20240115": {
+						"version": "20240115",
+						"label": "noble",
+						"size": 234567890,
+						"complete": true,
+						"progress": 1.0,
+						"files": {
+							"initrd": {
+								"filename": "initrd.gz",
+								"filetype": "initrd",
+								"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+								"size": 8765432,
+								"complete": true,
+								"progress": 1.0,
+								"upload_uri": "http://maas.test/upload/noble/initrd.gz"
+							}
+						}
+					}
+				}
+			}`),
+		)
+
 		res, err := c.BootResources().BootResource(7).Get(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
 	})
 
 	t.Run("import image", func(t *testing.T) {
+		tmp, err := os.CreateTemp("", "maas-bootresource-*.tgz")
+		assert.NoError(t, err)
+		t.Cleanup(func() { _ = os.Remove(tmp.Name()) })
+
+		content := []byte("dummy boot resource payload\n")
+		_, err = tmp.Write(content)
+		assert.NoError(t, err)
+		assert.NoError(t, tmp.Close())
+
+		size := len(content)
+		sum := sha256.Sum256(content)
+		sha := hex.EncodeToString(sum[:])
+
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/boot-resources/",
+			httpmock.NewStringResponder(200, fmt.Sprintf(`{
+				"id": 99,
+				"name": "test-image",
+				"type": "Synced",
+				"architecture": "amd64/generic",
+				"subarches": "generic",
+				"sets": {
+					"20251219": {
+						"version": "20251219",
+						"label": "stable",
+						"size": %d,
+						"complete": false,
+						"progress": 0,
+						"files": {
+							"root-tgz": {
+								"filename": "ubuntu.tar.gz",
+								"filetype": "tgz",
+								"sha256": "%s",
+								"size": %d,
+								"complete": false,
+								"progress": 0,
+								"upload_uri": "/boot-resources/99/upload/"
+							}
+						}
+					}
+				}
+			}`, size, sha, size)),
+		)
+		httpmock.RegisterResponder(
+			http.MethodPut,
+			"http://maas.test/api/2.0/boot-resources/99/upload/",
+			httpmock.NewStringResponder(200, `{}`),
+		)
+
 		res, err := c.BootResources().Builder("test-image",
 			"amd64/generic",
-			"e9844638c7345d182c5d88e1eaeae74749d02beeca38587a530207fddc0a280a",
-			"/Users/deepak/maas/ubuntu.tar.gz", 1262032476).Create(ctx)
+			sha,
+			tmp.Name(), size).Create(ctx)
 		assert.Nil(t, err)
 		err = res.Upload(ctx)
 		assert.Nil(t, err)

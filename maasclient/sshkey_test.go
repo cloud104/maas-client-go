@@ -18,14 +18,33 @@ package maasclient
 
 import (
 	"context"
-	"os"
+	"net/http"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSSHKeys(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	httpmock.RegisterResponder(
+		http.MethodGet,
+		"http://maas.test/api/2.0/account/prefs/sshkeys/",
+		httpmock.NewStringResponder(200, `[
+			{
+				"id": 1,
+				"key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtestkeymaterial test@example",
+				"comment": "test@example",
+				"resource_uri": "/MAAS/api/2.0/account/prefs/sshkeys/1/"
+			}
+		]`),
+	)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 

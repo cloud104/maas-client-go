@@ -86,13 +86,13 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/dnsresources/",
-			httpmock.NewStringResponder(200, `{	}`),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_create.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodDelete,
 			"http://maas.test/api/2.0/dnsresources/201/",
-			httpmock.NewStringResponder(204, ``),
+			httpmock.NewBytesResponder(204, nil),
 		)
 
 		res, err := c.DNSResources().

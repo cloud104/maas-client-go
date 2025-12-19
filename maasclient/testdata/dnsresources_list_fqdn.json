@@ -1,6 +1,6 @@
 [
 	{
-		"id": 1,
+		"id": 3,
 		"fqdn": "host1.maas.test",
 		"address_ttl": 300,
 		"ip_addresses": [

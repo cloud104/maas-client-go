@@ -126,7 +126,8 @@ func TestGetBootResources(t *testing.T) {
 	t.Run("import image", func(t *testing.T) {
 		tmp, err := os.CreateTemp("", "maas-bootresource-*.tgz")
 		assert.NoError(t, err)
-		t.Cleanup(func() { _ = os.Remove(tmp.Name()) })
+
+		defer func() { _ = os.Remove(tmp.Name()) }()
 
 		content := []byte("dummy boot resource payload\n")
 		_, err = tmp.Write(content)

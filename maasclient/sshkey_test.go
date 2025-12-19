@@ -38,8 +38,7 @@ func TestSSHKeys(t *testing.T) {
 			{
 				"id": 1,
 				"key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtestkeymaterial test@example",
-				"comment": "test@example",
-				"resource_uri": "/MAAS/api/2.0/account/prefs/sshkeys/1/"
+				"keySource": "test@example"
 			}
 		]`),
 	)

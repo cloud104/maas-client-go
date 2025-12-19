@@ -11,11 +11,11 @@ import (
 //go:embed testdata/*.json testdata/*.tmpl.json
 var mockdataFS embed.FS
 
-func mockData(t *testing.T, name string) string {
+func mockData(t *testing.T, name string) []byte {
 	t.Helper()
 
-	b, err := mockdataFS.ReadFile("mockdata/" + name)
+	b, err := mockdataFS.ReadFile("testdata/" + name)
 	require.NoError(t, err)
 
-	return string(bytes.TrimSpace(b))
+	return bytes.TrimSpace(b)
 }

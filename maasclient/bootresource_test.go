@@ -45,36 +45,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/",
-			httpmock.NewStringResponder(200, `[
-				{
-					"id": 1,
-					"name": "ubuntu/jammy",
-					"type": "Synced",
-					"architecture": "amd64/generic",
-					"subarches": "generic",
-					"title": "Ubuntu 22.04 LTS (Jammy Jellyfish)",
-					"sets": {
-						"20231201": {
-							"version": "20231201",
-							"label": "jammy",
-							"size": 123456789,
-							"complete": true,
-							"progress": 1.0,
-							"files": {
-								"root-tgz": {
-									"filename": "root.tgz",
-									"filetype": "tgz",
-									"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-									"size": 123456789,
-									"complete": true,
-									"progress": 1.0,
-									"upload_uri": "http://maas.test/upload/root.tgz"
-								}
-							}
-						}
-					}
-				}
-			]`),
+			httpmock.NewBytesResponder(200, mockData(t, "bootresources_list_all.json")),
 		)
 
 		list, err := c.BootResources().List(ctx, nil)
@@ -88,34 +59,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/7/",
-			httpmock.NewStringResponder(200, `{
-				"id": 7,
-				"name": "ubuntu/noble",
-				"type": "Synced",
-				"architecture": "amd64/generic",
-				"subarches": "generic",
-				"title": "Ubuntu 24.04 LTS (Noble Numbat)",
-				"sets": {
-					"20240115": {
-						"version": "20240115",
-						"label": "noble",
-						"size": 234567890,
-						"complete": true,
-						"progress": 1.0,
-						"files": {
-							"initrd": {
-								"filename": "initrd.gz",
-								"filetype": "initrd",
-								"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-								"size": 8765432,
-								"complete": true,
-								"progress": 1.0,
-								"upload_uri": "http://maas.test/upload/noble/initrd.gz"
-							}
-						}
-					}
-				}
-			}`),
+			httpmock.NewBytesResponder(200, mockData(t, "bootresources_get_7.json")),
 		)
 
 		res, err := c.BootResources().BootResource(7).Get(ctx)
@@ -143,33 +87,10 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/boot-resources/",
-			httpmock.NewStringResponder(200, fmt.Sprintf(`{
-				"id": 99,
-				"name": "test-image",
-				"type": "Synced",
-				"architecture": "amd64/generic",
-				"subarches": "generic",
-				"sets": {
-					"20251219": {
-						"version": "20251219",
-						"label": "stable",
-						"size": %d,
-						"complete": false,
-						"progress": 0,
-						"files": {
-							"root-tgz": {
-								"filename": "ubuntu.tar.gz",
-								"filetype": "tgz",
-								"sha256": "%s",
-								"size": %d,
-								"complete": false,
-								"progress": 0,
-								"upload_uri": "/boot-resources/99/upload/"
-							}
-						}
-					}
-				}
-			}`, size, sha, size)),
+			httpmock.NewStringResponder(200, fmt.Sprintf(
+				string(mockData(t, "bootresources_import_response.tmpl.json")),
+				size, sha, size,
+			)),
 		)
 		httpmock.RegisterResponder(
 			http.MethodPut,

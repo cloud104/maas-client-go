@@ -41,61 +41,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/dnsresources/?all=true",
-			httpmock.NewStringResponder(200, `[
-				{
-					"id": 1,
-					"fqdn": "host1.maas.test",
-					"address_ttl": 300,
-					"ip_addresses": [
-						{
-							"ip": "192.168.1.10",
-							"interface_set": [
-								{
-									"system_id": "sys-abc123",
-									"interface_id": "if-1",
-									"id": 1,
-									"name": "eth0",
-									"type": "physical",
-									"enabled": true,
-									"mac_address": "52:54:00:12:34:56",
-									"links": [
-										{
-											"id": "link-1",
-											"mode": "static",
-											"subnet": {
-												"id": 10,
-												"name": "subnet-10",
-												"space": "default",
-												"vlan": {
-													"id": 100,
-													"vid": 100,
-													"name": "vlan100",
-													"fabric_id": 1,
-													"fabric_name": "fabric-1",
-													"mtu": 1500,
-													"dhcp_on": true
-												},
-												"cidr": "192.168.1.0/24"
-											},
-											"ip_address": "192.168.1.10"
-										}
-									],
-									"children": [],
-									"vlan": {
-										"id": 100,
-										"vid": 100,
-										"name": "vlan100",
-										"fabric_id": 1,
-										"fabric_name": "fabric-1",
-										"mtu": 1500,
-										"dhcp_on": true
-									}
-								}
-							]
-						}
-					]
-				}
-			]`),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_list_all.json")),
 		)
 
 		res, err := c.DNSResources().List(ctx, nil)
@@ -120,61 +66,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/dnsresources/?fqdn=maas-1.maas.sc",
-			httpmock.NewStringResponder(200, `[
-				{
-					"id": 1,
-					"fqdn": "host1.maas.test",
-					"address_ttl": 300,
-					"ip_addresses": [
-						{
-							"ip": "192.168.1.10",
-							"interface_set": [
-								{
-									"system_id": "sys-abc123",
-									"interface_id": "if-1",
-									"id": 1,
-									"name": "eth0",
-									"type": "physical",
-									"enabled": true,
-									"mac_address": "52:54:00:12:34:56",
-									"links": [
-										{
-											"id": "link-1",
-											"mode": "static",
-											"subnet": {
-												"id": 10,
-												"name": "subnet-10",
-												"space": "default",
-												"vlan": {
-													"id": 100,
-													"vid": 100,
-													"name": "vlan100",
-													"fabric_id": 1,
-													"fabric_name": "fabric-1",
-													"mtu": 1500,
-													"dhcp_on": true
-												},
-												"cidr": "192.168.1.0/24"
-											},
-											"ip_address": "192.168.1.10"
-										}
-									],
-									"children": [],
-									"vlan": {
-										"id": 100,
-										"vid": 100,
-										"name": "vlan100",
-										"fabric_id": 1,
-										"fabric_name": "fabric-1",
-										"mtu": 1500,
-										"dhcp_on": true
-									}
-								}
-							]
-						}
-					]
-				}
-			]`),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources_list_fqdn.json")),
 		)
 
 		filters := ParamsBuilder().Add(FQDNKey, "maas-1.maas.sc")
@@ -194,8 +86,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/dnsresources/",
-			httpmock.NewStringResponder(200, `{
-		}`),
+			httpmock.NewStringResponder(200, `{	}`),
 		)
 
 		httpmock.RegisterResponder(

@@ -41,13 +41,7 @@ func TestSSHKeys(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/account/prefs/sshkeys/",
-			httpmock.NewStringResponder(200, `[
-			{
-				"id": 1,
-				"key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtestkeymaterial test@example",
-				"keySource": "test@example"
-			}
-		]`),
+			httpmock.NewBytesResponder(200, mockData(t, "sshkeys_list.json")),
 		)
 
 		sshKeys, err := c.SSHKeys().List(ctx)

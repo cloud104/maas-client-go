@@ -24,6 +24,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"github.com/jarcoal/httpmock"
 )
 
 func TestMain(m *testing.M) {
@@ -33,7 +35,18 @@ func TestMain(m *testing.M) {
 }
 
 func TestClient_GetMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
+
+	httpmock.RegisterResponder(
+		http.MethodGet,
+		"http://maas.test/api/2.0/machines/e37xxm/",
+		httpmock.NewBytesResponder(200, mockData(t, "machines_get_e37xxm.json")),
+	)
 
 	ctx := context.Background()
 	res := c.Machines().Machine("e37xxm")

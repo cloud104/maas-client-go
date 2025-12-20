@@ -18,17 +18,32 @@ package maasclient
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"os"
+	"net/http"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestZones(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("list zones", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/zones/",
+			httpmock.NewBytesResponder(200, mockData(t, "zones_list.json")),
+		)
+
 		zones, err := c.Zones().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, zones)

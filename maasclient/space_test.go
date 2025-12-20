@@ -19,16 +19,30 @@ package maasclient
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
+	"net/http"
+	"github.com/jarcoal/httpmock"
 )
 
 func TestSpaces(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("space list", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/spaces/",
+			httpmock.NewBytesResponder(200, mockData(t, "spaces_list.json")),
+		)
+
 		res, err := c.Spaces().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

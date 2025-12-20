@@ -18,10 +18,11 @@ package maasclient
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"net/http"
+	"testing"
+
 	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSpaces(t *testing.T) {
@@ -40,7 +41,7 @@ func TestSpaces(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/spaces/",
-			httpmock.NewBytesResponder(200, mockData(t, "spaces/list__all.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/spaces/list__all.json")),
 		)
 
 		res, err := c.Spaces().List(ctx)

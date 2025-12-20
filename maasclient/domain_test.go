@@ -39,7 +39,7 @@ func TestDomain(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/domains/",
-			httpmock.NewBytesResponder(200, mockData(t, "domains/list__all.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/domains/list__all.json")),
 		)
 
 		res, err := c.Domains().List(ctx)

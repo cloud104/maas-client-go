@@ -58,7 +58,7 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, mockData(t, "tags/list__all.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/tags/list__all.json")),
 		)
 
 		res, err := c.Tags().List(ctx)
@@ -76,13 +76,13 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, nil),
+			httpmock.NewJsonResponderOrPanic(200, nil),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, mockData(t, "tags/list__all.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/tags/list__all.json")),
 		)
 
 		err := c.Tags().Create(ctx, "testCase-tag-1")
@@ -106,7 +106,7 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, nil),
+			httpmock.NewJsonResponderOrPanic(200, nil),
 		)
 
 		// First, create a test tag
@@ -148,7 +148,7 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, nil),
+			httpmock.NewJsonResponderOrPanic(200, nil),
 		)
 
 		// Create a test tag

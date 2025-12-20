@@ -41,7 +41,7 @@ func TestRackControllers(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/rackcontrollers/",
-			httpmock.NewBytesResponder(200, nil),
+			httpmock.NewJsonResponderOrPanic(200, nil),
 		)
 
 		err := c.RackControllers().ImportBootImages(ctx)

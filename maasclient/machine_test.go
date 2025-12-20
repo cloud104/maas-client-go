@@ -46,7 +46,7 @@ func TestClient_GetMachine(t *testing.T) {
 	httpmock.RegisterResponder(
 		http.MethodGet,
 		"http://maas.test/api/2.0/machines/e37xxm/",
-		httpmock.NewBytesResponder(200, mockData(t, "machines/get__systemid-e37xxm.json")),
+		httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
 	)
 
 	ctx := context.Background()
@@ -98,13 +98,13 @@ func TestClient_AllocateMachine(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/get__systemid-e37xxm.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/e37xxm/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/get__systemid-e37xxm.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
 		)
 
 		res, err := c.Machines().Allocator().Allocate(ctx)
@@ -132,13 +132,13 @@ func TestClient_AllocateMachine(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/create__systemid-a12b3c.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/a12b3c/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/create__systemid-a12b3c.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
 		)
 
 		res, err := c.Machines().Allocator().WithZone("az1").Allocate(ctx)
@@ -175,19 +175,19 @@ func TestClient_DeployMachine(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/create__systemid-a12b3c.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodPut,
 			"http://maas.test/api/2.0/machines/a12b3c/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/update__systemid-a12b3c.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/update__systemid-a12b3c.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/machines/a12b3c/",
-			httpmock.NewBytesResponder(200, mockData(t, "machines/deploy__systemid-a12b3c.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/deploy__systemid-a12b3c.json")),
 		)
 
 		res, err := c.Machines().Allocator().Allocate(ctx)
@@ -228,7 +228,7 @@ func TestClient_UpdateMachine(t *testing.T) {
 	httpmock.RegisterResponder(
 		http.MethodPut,
 		"http://maas.test/api/2.0/machines/e37xxm/",
-		httpmock.NewBytesResponder(200, mockData(t, "machines/update__systemid-e37xxm.json")),
+		httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/update__systemid-e37xxm.json")),
 	)
 
 	res, err := c.Machines().Machine("e37xxm").

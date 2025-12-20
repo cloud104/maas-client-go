@@ -8,15 +8,15 @@
 		"20251219": {
 			"version": "20251219",
 			"label": "stable",
-			"size": %d,
+			"size": 28,
 			"complete": false,
 			"progress": 0,
 			"files": {
 				"root-tgz": {
 					"filename": "ubuntu.tar.gz",
 					"filetype": "tgz",
-					"sha256": "%s",
-					"size": %d,
+					"sha256": "f3f0dca7ef3acf4c581232f996ff2df849b3d768c11ee1805e4fc78c8b5d2f40",
+					"size": 28,
 					"complete": false,
 					"progress": 0,
 					"upload_uri": "/boot-resources/99/upload/"

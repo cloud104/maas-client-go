@@ -20,7 +20,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"net/http"
 	"os"
 	"testing"
@@ -45,7 +44,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/",
-			httpmock.NewBytesResponder(200, mockData(t, "bootresources/list__all.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/bootresources/list__all.json")),
 		)
 
 		list, err := c.BootResources().List(ctx, nil)
@@ -59,7 +58,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/7/",
-			httpmock.NewBytesResponder(200, mockData(t, "bootresources/get__id-7.json")),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/bootresources/get__id-7.json")),
 		)
 
 		res, err := c.BootResources().BootResource(7).Get(ctx)
@@ -87,15 +86,12 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/boot-resources/",
-			httpmock.NewStringResponder(200, fmt.Sprintf(
-				string(mockData(t, "bootresources/import_response__id-99.tmpl.json")),
-				size, sha, size,
-			)),
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/bootresources/import_response__id-99.json")),
 		)
 		httpmock.RegisterResponder(
 			http.MethodPut,
 			"http://maas.test/api/2.0/boot-resources/99/upload/",
-			httpmock.NewStringResponder(200, `{}`),
+			httpmock.NewBytesResponder(200, nil),
 		)
 
 		res, err := c.BootResources().Builder("test-image",

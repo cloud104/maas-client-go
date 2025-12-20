@@ -41,7 +41,7 @@ func TestUsers(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/users/",
-			httpmock.NewBytesResponder(200, mockData(t, "users_list.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "users__list__all.json")),
 		)
 
 		res, err := c.Users().List(ctx)
@@ -56,7 +56,7 @@ func TestUsers(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/users/",
-			httpmock.NewBytesResponder(200, mockData(t, "users_whoami.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "users__get__whoami.json")),
 		)
 
 		res, err := c.Users().WhoAmI(ctx)

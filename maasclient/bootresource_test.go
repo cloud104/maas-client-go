@@ -45,7 +45,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/",
-			httpmock.NewBytesResponder(200, mockData(t, "bootresources_list_all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "bootresources__list__all.json")),
 		)
 
 		list, err := c.BootResources().List(ctx, nil)
@@ -59,7 +59,7 @@ func TestGetBootResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/boot-resources/7/",
-			httpmock.NewBytesResponder(200, mockData(t, "bootresources_get_7.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "bootresources__get__id-7.json")),
 		)
 
 		res, err := c.BootResources().BootResource(7).Get(ctx)
@@ -88,7 +88,7 @@ func TestGetBootResources(t *testing.T) {
 			http.MethodPost,
 			"http://maas.test/api/2.0/boot-resources/",
 			httpmock.NewStringResponder(200, fmt.Sprintf(
-				string(mockData(t, "bootresources_import_response.tmpl.json")),
+				string(mockData(t, "bootresources__import_response__id-99.tmpl.json")),
 				size, sha, size,
 			)),
 		)

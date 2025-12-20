@@ -41,7 +41,7 @@ func TestResourcePool(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/resourcepools/",
-			httpmock.NewBytesResponder(200, mockData(t, "resourcepools_list.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "resourcepools__list__all.json")),
 		)
 
 		res, err := c.ResourcePools().List(ctx, nil)

@@ -18,17 +18,32 @@ package maasclient
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"os"
+	"net/http"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRackControllers(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("begin rack import", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/rackcontrollers/",
+			httpmock.NewBytesResponder(200, nil),
+		)
+
 		err := c.RackControllers().ImportBootImages(ctx)
 		assert.Nil(t, err, "expecting nil error")
 	})

@@ -41,7 +41,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/dnsresources/?all=true",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__list__all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/list__all.json")),
 		)
 
 		res, err := c.DNSResources().List(ctx, nil)
@@ -66,7 +66,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/dnsresources/?fqdn=maas-1.maas.sc",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__list__fqdn-maas-1.maas.sc.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/list__fqdn-maas-1.maas.sc.json")),
 		)
 
 		filters := ParamsBuilder().Add(FQDNKey, "maas-1.maas.sc")
@@ -86,7 +86,7 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/dnsresources/",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__create__id-201.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/create__id-201.json")),
 		)
 
 		httpmock.RegisterResponder(
@@ -115,19 +115,19 @@ func TestGetDNSResources(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodPost,
 			"http://maas.test/api/2.0/dnsresources/",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__create__id-202.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/create__id-202.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodPut,
 			"http://maas.test/api/2.0/dnsresources/202/",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__update__id-202.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/update__id-202.json")),
 		)
 
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/dnsresources/202/",
-			httpmock.NewBytesResponder(200, mockData(t, "dnsresources__update__id-202.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "dnsresources/update__id-202.json")),
 		)
 
 		httpmock.RegisterResponder(

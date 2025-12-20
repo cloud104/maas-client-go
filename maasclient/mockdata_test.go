@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//go:embed testdata/*.json testdata/*.tmpl.json
+//go:embed testdata/**/*
 var mockdataFS embed.FS
 
 func mockData(t *testing.T, name string) []byte {

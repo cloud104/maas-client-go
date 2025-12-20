@@ -40,7 +40,7 @@ func TestSpaces(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/spaces/",
-			httpmock.NewBytesResponder(200, mockData(t, "spaces__list__all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "spaces/list__all.json")),
 		)
 
 		res, err := c.Spaces().List(ctx)

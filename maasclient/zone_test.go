@@ -41,7 +41,7 @@ func TestZones(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/zones/",
-			httpmock.NewBytesResponder(200, mockData(t, "zones__list__all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "zones/list__all.json")),
 		)
 
 		zones, err := c.Zones().List(ctx)

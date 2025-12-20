@@ -58,7 +58,7 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, mockData(t, "tags__list__all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "tags/list__all.json")),
 		)
 
 		res, err := c.Tags().List(ctx)
@@ -82,7 +82,7 @@ func TestTags(t *testing.T) {
 		httpmock.RegisterResponder(
 			http.MethodGet,
 			"http://maas.test/api/2.0/tags/",
-			httpmock.NewBytesResponder(200, mockData(t, "tags__list__all.json")),
+			httpmock.NewBytesResponder(200, mockData(t, "tags/list__all.json")),
 		)
 
 		err := c.Tags().Create(ctx, "testCase-tag-1")

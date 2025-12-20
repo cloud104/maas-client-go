@@ -101,6 +101,12 @@ func TestClient_AllocateMachine(t *testing.T) {
 			httpmock.NewBytesResponder(200, mockData(t, "machines_get_e37xxm.json")),
 		)
 
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/e37xxm/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_get_e37xxm.json")),
+		)
+
 		res, err := c.Machines().Allocator().Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -129,6 +135,12 @@ func TestClient_AllocateMachine(t *testing.T) {
 			httpmock.NewBytesResponder(200, mockData(t, "machines_create_a12b3c.json")),
 		)
 
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_create_a12b3c.json")),
+		)
+
 		res, err := c.Machines().Allocator().WithZone("az1").Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -139,7 +151,12 @@ func TestClient_AllocateMachine(t *testing.T) {
 }
 
 func TestClient_DeployMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
@@ -153,6 +170,26 @@ func TestClient_DeployMachine(t *testing.T) {
 	}
 
 	t.Run("simple", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_create_a12b3c.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPut,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_update_a12b3c.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewBytesResponder(200, mockData(t, "machines_deploy_a12b3c.json")),
+		)
+
 		res, err := c.Machines().Allocator().Allocate(ctx)
 		if err != nil {
 			t.Fatal("Machine didn't allocate")

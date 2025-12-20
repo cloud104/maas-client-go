@@ -16,9 +16,9 @@
 		"192.168.10.21"
 	],
 	"status_name": "Deployed",
-	"osystem": "ubuntu",
-	"distro_series": "jammy",
-	"swap_size": 8192,
+	"osystem": "custom",
+	"distro_series": "u-1804-0-k-11915-0",
+	"swap_size": 0,
 	"memory": 16384,
 	"storage": 250059.35,
 	"boot_interface": {

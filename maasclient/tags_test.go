@@ -53,6 +53,14 @@ func TestTags(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list tags", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewBytesResponder(200, mockData(t, "tags_list.json")),
+		)
+
 		res, err := c.Tags().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

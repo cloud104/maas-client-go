@@ -1,0 +1,30 @@
+[
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/prod/",
+		"name": "prod",
+		"definition": "tag:prod",
+		"comment": "Production machines",
+		"kernel_opts": ""
+	},
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/gpu/",
+		"name": "gpu",
+		"definition": "tag:gpu",
+		"comment": "GPU-capable machines",
+		"kernel_opts": "intel_iommu=on"
+	},
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/lxd/",
+		"name": "lxd",
+		"definition": "tag:lxd",
+		"comment": "LXD hosts",
+		"kernel_opts": ""
+	},
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/compute/",
+		"name": "compute",
+		"definition": "tag:compute",
+		"comment": "General compute pool",
+		"kernel_opts": ""
+	}
+]

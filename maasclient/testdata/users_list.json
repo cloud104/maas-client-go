@@ -1,0 +1,20 @@
+[
+	{
+		"is_superuser": true,
+		"username": "admin",
+		"email": "admin@maas.test",
+		"is_local": true
+	},
+	{
+		"is_superuser": false,
+		"username": "dev",
+		"email": "dev@maas.test",
+		"is_local": true
+	},
+	{
+		"is_superuser": false,
+		"username": "test-user-1",
+		"email": "test-user-1@maas.test",
+		"is_local": true
+	}
+]

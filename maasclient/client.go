@@ -26,7 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"moul.io/http2curl"
 	"github.com/spectrocloud/maas-client-go/maasclient/oauth1"
 )
 
@@ -178,8 +177,6 @@ func (c *authenticatedClient) Delete(ctx context.Context, path string, params ur
 }
 
 func (c *authenticatedClient) dispatchRequest(req *http.Request) (*http.Response, error) {
-	command, _ := http2curl.GetCurlCommand(req)
-	fmt.Println(command)
 	return c.httpClient.Do(req)
 }
 

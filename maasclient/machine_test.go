@@ -218,7 +218,18 @@ func TestClient_DeployMachine(t *testing.T) {
 }
 
 func TestClient_UpdateMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
+
+	httpmock.RegisterResponder(
+		http.MethodPut,
+		"http://maas.test/api/2.0/machines/e37xxm/",
+		httpmock.NewBytesResponder(200, mockData(t, "machines_update_e37xxm.json")),
+	)
 
 	res, err := c.Machines().Machine("e37xxm").
 		Modifier().

@@ -101,6 +101,14 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("assign tag to machines", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewBytesResponder(200, nil),
+		)
+
 		// First, create a test tag
 		tagName := "test-assign-unassign-tag"
 		err := c.Tags().Create(ctx, tagName)
@@ -135,6 +143,14 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("unassign tag from machines", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewBytesResponder(200, nil),
+		)
+
 		// Create a test tag
 		tagName := "test-assign-unassign-tag"
 		err := c.Tags().Create(ctx, tagName)

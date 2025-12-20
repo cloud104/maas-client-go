@@ -29,22 +29,26 @@ package maasclient
 import (
 	"context"
 	"fmt"
-	"os"
+	"net/http"
 	"testing"
 	"time"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTags(t *testing.T) {
-	endPoint := os.Getenv("MAAS_ENDPOINT")
-	apiKey := os.Getenv("MAAS_API_KEY")
-	c := NewAuthenticatedClientSet(endPoint, apiKey)
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	// Uncomment below for Unit Testing purposes.
-	//os.Setenv("MAAS_ENDPOINT", "<YOUR_MAAS_ENDPOINT>")
-	//os.Setenv("MAAS_API_KEY", "<YOUR_MAAS_API_KEY>")
-	//c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	// os.Setenv("MAAS_ENDPOINT", "<YOUR_MAAS_ENDPOINT>")
+	// os.Setenv("MAAS_API_KEY", "<YOUR_MAAS_API_KEY>")
+	// c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
 
 	ctx := context.Background()
 
@@ -52,6 +56,7 @@ func TestTags(t *testing.T) {
 		res, err := c.Tags().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
+
 		for _, eachTag := range res {
 			fmt.Println(eachTag.Name())
 		}
@@ -67,6 +72,7 @@ func TestTags(t *testing.T) {
 		res, err := c.Tags().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
+
 		for _, eachTag := range res {
 			fmt.Println(eachTag.Name())
 		}
@@ -99,6 +105,7 @@ func TestTags(t *testing.T) {
 		machine := c.Machines().Machine(systemID)
 		detailedMachine, err := machine.Get(ctx)
 		assert.Nil(t, err, "Failed to get machine details for %s", systemID)
+
 		tags := detailedMachine.Tags()
 		assert.Contains(t, tags, tagName,
 			"Tag '%s' not found on machine %s. Machine tags: %v", tagName, systemID, tags)

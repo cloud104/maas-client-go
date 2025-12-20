@@ -71,6 +71,20 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("create tag", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewBytesResponder(200, nil),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewBytesResponder(200, mockData(t, "tags_list.json")),
+		)
+
 		err := c.Tags().Create(ctx, "testCase-tag-1")
 		assert.Nil(t, err)
 

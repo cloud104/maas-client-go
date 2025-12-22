@@ -45,14 +45,17 @@ func TestTags(t *testing.T) {
 
 	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
-	// Uncomment below for Unit Testing purposes.
-	//os.Setenv("MAAS_ENDPOINT", "<YOUR_MAAS_ENDPOINT>")
-	//os.Setenv("MAAS_API_KEY", "<YOUR_MAAS_API_KEY>")
-	//c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
-
 	ctx := context.Background()
 
 	t.Run("list tags", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/tags/list__all.json")),
+		)
+
 		res, err := c.Tags().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
@@ -62,6 +65,20 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("create tag", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewJsonResponderOrPanic(200, nil),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/tags/list__all.json")),
+		)
+
 		err := c.Tags().Create(ctx, "testCase-tag-1")
 		assert.Nil(t, err)
 
@@ -77,6 +94,14 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("assign tag to machines", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewJsonResponderOrPanic(200, nil),
+		)
+
 		// First, create a test tag
 		tagName := "test-assign-unassign-tag"
 		err := c.Tags().Create(ctx, tagName)
@@ -110,6 +135,14 @@ func TestTags(t *testing.T) {
 	})
 
 	t.Run("unassign tag from machines", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/tags/",
+			httpmock.NewJsonResponderOrPanic(200, nil),
+		)
+
 		// Create a test tag
 		tagName := "test-assign-unassign-tag"
 		err := c.Tags().Create(ctx, tagName)

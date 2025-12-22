@@ -36,6 +36,14 @@ func TestSpaces(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("space list", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/spaces/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/spaces/list__all.json")),
+		)
+
 		res, err := c.Spaces().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

@@ -36,6 +36,12 @@ func TestDomain(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list domains", func(t *testing.T) {
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/domains/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/domains/list__all.json")),
+		)
+
 		res, err := c.Domains().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

@@ -42,6 +42,12 @@ func TestClient_GetMachine(t *testing.T) {
 
 	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
+	httpmock.RegisterResponder(
+		http.MethodGet,
+		"http://maas.test/api/2.0/machines/e37xxm/",
+		httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
+	)
+
 	ctx := context.Background()
 	res := c.Machines().Machine("e37xxm")
 	_, err := res.Get(ctx)
@@ -87,6 +93,20 @@ func TestClient_AllocateMachine(t *testing.T) {
 	}
 
 	t.Run("no-options", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/e37xxm/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/get__systemid-e37xxm.json")),
+		)
+
 		res, err := c.Machines().Allocator().Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -107,6 +127,20 @@ func TestClient_AllocateMachine(t *testing.T) {
 	})
 
 	t.Run("with-az", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
+		)
+
 		res, err := c.Machines().Allocator().WithZone("az1").Allocate(ctx)
 
 		assert.Nil(t, err, "expecting nil error")
@@ -137,6 +171,26 @@ func TestClient_DeployMachine(t *testing.T) {
 	}
 
 	t.Run("simple", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/create__systemid-a12b3c.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPut,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/update__systemid-a12b3c.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/machines/a12b3c/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/deploy__systemid-a12b3c.json")),
+		)
+
 		res, err := c.Machines().Allocator().Allocate(ctx)
 		if err != nil {
 			t.Fatal("Machine didn't allocate")
@@ -171,6 +225,12 @@ func TestClient_UpdateMachine(t *testing.T) {
 	t.Cleanup(httpmock.DeactivateAndReset)
 
 	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
+
+	httpmock.RegisterResponder(
+		http.MethodPut,
+		"http://maas.test/api/2.0/machines/e37xxm/",
+		httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/machines/update__systemid-e37xxm.json")),
+	)
 
 	res, err := c.Machines().Machine("e37xxm").
 		Modifier().

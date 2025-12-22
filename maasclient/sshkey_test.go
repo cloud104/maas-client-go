@@ -36,6 +36,14 @@ func TestSSHKeys(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list sshkeys", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/account/prefs/sshkeys/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/sshkeys/list__all.json")),
+		)
+
 		sshKeys, err := c.SSHKeys().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, sshKeys)

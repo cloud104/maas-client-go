@@ -36,6 +36,14 @@ func TestResourcePool(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list resourcepools", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/resourcepools/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/resourcepools/list__all.json")),
+		)
+
 		res, err := c.ResourcePools().List(ctx, nil)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

@@ -36,6 +36,14 @@ func TestUsers(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list users", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/users/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/users/list__all.json")),
+		)
+
 		res, err := c.Users().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
@@ -43,6 +51,14 @@ func TestUsers(t *testing.T) {
 	})
 
 	t.Run("whoami", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/users/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/users/get__whoami.json")),
+		)
+
 		res, err := c.Users().WhoAmI(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

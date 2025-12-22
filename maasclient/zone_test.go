@@ -36,6 +36,14 @@ func TestZones(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("list zones", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/zones/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/zones/list__all.json")),
+		)
+
 		zones, err := c.Zones().List(ctx)
 		assert.Nil(t, err)
 		assert.NotNil(t, zones)

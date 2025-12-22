@@ -36,6 +36,14 @@ func TestGetDNSResources(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("no-options", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/dnsresources/?all=true",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/list__all.json")),
+		)
+
 		res, err := c.DNSResources().List(ctx, nil)
 		assert.Nil(t, err, "expecting nil error")
 		assert.NotNil(t, res, "expecting non-nil result")
@@ -55,6 +63,12 @@ func TestGetDNSResources(t *testing.T) {
 	})
 
 	t.Run("get maas-1.maas", func(t *testing.T) {
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/dnsresources/?fqdn=maas-1.maas.sc",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/list__fqdn-maas-1.maas.sc.json")),
+		)
+
 		filters := ParamsBuilder().Add(FQDNKey, "maas-1.maas.sc")
 		res, err := c.DNSResources().List(ctx, filters)
 		assert.Nil(t, err, "expecting nil error")
@@ -68,6 +82,20 @@ func TestGetDNSResources(t *testing.T) {
 	})
 
 	t.Run("create test-unit-1.maas", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/dnsresources/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/create__id-201.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodDelete,
+			"http://maas.test/api/2.0/dnsresources/201/",
+			httpmock.NewJsonResponderOrPanic(204, nil),
+		)
+
 		res, err := c.DNSResources().
 			Builder().
 			WithFQDN("test-unit-1.maas.sc").
@@ -84,6 +112,31 @@ func TestGetDNSResources(t *testing.T) {
 	})
 
 	t.Run("create test-unit-2.maas", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/dnsresources/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/create__id-202.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodPut,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/update__id-202.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/dnsresources/update__id-202.json")),
+		)
+
+		httpmock.RegisterResponder(
+			http.MethodDelete,
+			"http://maas.test/api/2.0/dnsresources/202/",
+			httpmock.NewJsonResponderOrPanic(204, nil),
+		)
 
 		//err := c.DNSResources().DNSResource(148).Delete(ctx)
 		//assert.Nil(t, err)

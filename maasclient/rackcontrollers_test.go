@@ -36,6 +36,14 @@ func TestRackControllers(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("begin rack import", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodPost,
+			"http://maas.test/api/2.0/rackcontrollers/",
+			httpmock.NewJsonResponderOrPanic(200, nil),
+		)
+
 		err := c.RackControllers().ImportBootImages(ctx)
 		assert.Nil(t, err, "expecting nil error")
 	})

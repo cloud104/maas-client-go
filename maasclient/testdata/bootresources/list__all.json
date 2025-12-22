@@ -1,0 +1,30 @@
+[
+	{
+		"id": 1,
+		"name": "ubuntu/jammy",
+		"type": "Synced",
+		"architecture": "amd64/generic",
+		"subarches": "generic",
+		"title": "Ubuntu 22.04 LTS (Jammy Jellyfish)",
+		"sets": {
+			"20231201": {
+				"version": "20231201",
+				"label": "jammy",
+				"size": 123456789,
+				"complete": true,
+				"progress": 1.0,
+				"files": {
+					"root-tgz": {
+						"filename": "root.tgz",
+						"filetype": "tgz",
+						"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+						"size": 123456789,
+						"complete": true,
+						"progress": 1.0,
+						"upload_uri": "http://maas.test/upload/root.tgz"
+					}
+				}
+			}
+		}
+	}
+]

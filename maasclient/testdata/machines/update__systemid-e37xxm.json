@@ -1,0 +1,36 @@
+{
+	"system_id": "e37xxm",
+	"fqdn": "e37xxm.maas.sc",
+	"zone": {
+		"id": 2,
+		"name": "az2"
+	},
+	"pool": {
+		"id": 1,
+		"name": "default"
+	},
+	"power_state": "on",
+	"power_type": "ipmi",
+	"hostname": "e37xxm",
+	"ip_addresses": [
+		"192.168.20.15"
+	],
+	"status_name": "Deployed",
+	"osystem": "ubuntu",
+	"distro_series": "jammy",
+	"swap_size": 10,
+	"memory": 16384,
+	"storage": 250059.35,
+	"boot_interface": {
+		"id": 1,
+		"type": "physical",
+		"name": "enp2s0",
+		"children": []
+	},
+	"parent": {
+		"system_id": ""
+	},
+	"tags": [
+		"prod"
+	]
+}

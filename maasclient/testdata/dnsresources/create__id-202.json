@@ -1,0 +1,6 @@
+{
+	"id": 202,
+	"fqdn": "test-unit-2.maas.sc",
+	"address_ttl": 10,
+	"ip_addresses": []
+}

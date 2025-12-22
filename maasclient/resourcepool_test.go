@@ -18,17 +18,32 @@ package maasclient
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"os"
+	"net/http"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestResourcePool(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
 	t.Run("list resourcepools", func(t *testing.T) {
+		defer httpmock.Reset()
+
+		httpmock.RegisterResponder(
+			http.MethodGet,
+			"http://maas.test/api/2.0/resourcepools/",
+			httpmock.NewJsonResponderOrPanic(200, httpmock.File("testdata/resourcepools/list__all.json")),
+		)
+
 		res, err := c.ResourcePools().List(ctx, nil)
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

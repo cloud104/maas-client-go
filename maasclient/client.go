@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spectrocloud/maas-client-go/maasclient/oauth1"
+	"github.com/cloud104/maas-client-go/maasclient/oauth1"
 )
 
 // authenticatedClient

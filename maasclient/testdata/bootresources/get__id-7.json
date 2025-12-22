@@ -1,0 +1,28 @@
+{
+	"id": 7,
+	"name": "ubuntu/noble",
+	"type": "Synced",
+	"architecture": "amd64/generic",
+	"subarches": "generic",
+	"title": "Ubuntu 24.04 LTS (Noble Numbat)",
+	"sets": {
+		"20240115": {
+			"version": "20240115",
+			"label": "noble",
+			"size": 234567890,
+			"complete": true,
+			"progress": 1.0,
+			"files": {
+				"initrd": {
+					"filename": "initrd.gz",
+					"filetype": "initrd",
+					"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+					"size": 8765432,
+					"complete": true,
+					"progress": 1.0,
+					"upload_uri": "http://maas.test/upload/noble/initrd.gz"
+				}
+			}
+		}
+	}
+}

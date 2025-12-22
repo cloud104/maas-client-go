@@ -19,10 +19,12 @@ package maasclient
 import (
 	"context"
 	"math/rand"
+	"net/http"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +35,12 @@ func TestMain(m *testing.M) {
 }
 
 func TestClient_GetMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 	res := c.Machines().Machine("e37xxm")
@@ -60,7 +67,12 @@ func TestClient_GetMachine(t *testing.T) {
 }
 
 func TestClient_AllocateMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
@@ -106,7 +118,12 @@ func TestClient_AllocateMachine(t *testing.T) {
 }
 
 func TestClient_DeployMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	ctx := context.Background()
 
@@ -148,7 +165,12 @@ func TestClient_DeployMachine(t *testing.T) {
 }
 
 func TestClient_UpdateMachine(t *testing.T) {
-	c := NewAuthenticatedClientSet(os.Getenv("MAAS_ENDPOINT"), os.Getenv("MAAS_API_KEY"))
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	res, err := c.Machines().Machine("e37xxm").
 		Modifier().

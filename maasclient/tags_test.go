@@ -29,17 +29,21 @@ package maasclient
 import (
 	"context"
 	"fmt"
-	"os"
+	"net/http"
 	"testing"
 	"time"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTags(t *testing.T) {
-	endPoint := os.Getenv("MAAS_ENDPOINT")
-	apiKey := os.Getenv("MAAS_API_KEY")
-	c := NewAuthenticatedClientSet(endPoint, apiKey)
+	httpClient := &http.Client{}
+
+	httpmock.ActivateNonDefault(httpClient)
+	t.Cleanup(httpmock.DeactivateAndReset)
+
+	c := NewAuthenticatedClientSet("http://maas.test", "dummy-api-key", func(client *authenticatedClientSet) { client.WithHTTPClient(httpClient) })
 
 	// Uncomment below for Unit Testing purposes.
 	//os.Setenv("MAAS_ENDPOINT", "<YOUR_MAAS_ENDPOINT>")

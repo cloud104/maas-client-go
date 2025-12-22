@@ -1,0 +1,18 @@
+[
+	{
+		"id": 1,
+		"isAuthoritative": true,
+		"ttl": 300,
+		"isDefault": true,
+		"name": "maas.sc",
+		"resourceRecordCount": 12
+	},
+	{
+		"id": 2,
+		"isAuthoritative": false,
+		"ttl": 600,
+		"isDefault": false,
+		"name": "test.maas.sc",
+		"resourceRecordCount": 3
+	}
+]

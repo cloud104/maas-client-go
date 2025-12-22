@@ -1,0 +1,17 @@
+[
+	{
+		"id": 1,
+		"name": "default",
+		"description": "Default zone"
+	},
+	{
+		"id": 2,
+		"name": "az1",
+		"description": "Availability zone 1"
+	},
+	{
+		"id": 3,
+		"name": "az2",
+		"description": "Availability zone 2"
+	}
+]

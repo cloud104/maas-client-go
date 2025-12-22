@@ -1,0 +1,7 @@
+[
+	{
+		"id": 1,
+		"key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtestkeymaterial test@example",
+		"keySource": "test@example"
+	}
+]

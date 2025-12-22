@@ -1,0 +1,16 @@
+[
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/testCase-tag-1/",
+		"name": "testCase-tag-1",
+		"definition": "tag:testCase-tag-1",
+		"comment": "Test case tag 1",
+		"kernel_opts": ""
+	},
+	{
+		"resource_uri": "/MAAS/api/2.0/tags/testCase-tag-2/",
+		"name": "testCase-tag-2",
+		"definition": "tag:testCase-tag-2",
+		"comment": "Test case tag 2",
+		"kernel_opts": "intel_iommu=on"
+	}
+]

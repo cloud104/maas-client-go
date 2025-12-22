@@ -1,0 +1,17 @@
+[
+	{
+		"id": 1,
+		"name": "compute",
+		"description": "General-purpose compute nodes"
+	},
+	{
+		"id": 2,
+		"name": "lxd",
+		"description": "LXD virtual machine hosts"
+	},
+	{
+		"id": 3,
+		"name": "gpu",
+		"description": "GPU-enabled machines"
+	}
+]

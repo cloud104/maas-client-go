@@ -1,0 +1,57 @@
+[
+	{
+		"name": "default",
+		"subnets": [
+			{
+				"id": 10,
+				"name": "subnet-10",
+				"space": "default",
+				"vlan": {
+					"id": 100,
+					"vid": 100,
+					"name": "vlan100",
+					"fabric": "fabric-1",
+					"fabric_id": 1,
+					"mtu": 1500,
+					"dhcp_on": true
+				},
+				"cidr": "192.168.1.0/24"
+			}
+		]
+	},
+	{
+		"name": "az1",
+		"subnets": [
+			{
+				"id": 11,
+				"name": "subnet-az1-1",
+				"space": "az1",
+				"vlan": {
+					"id": 101,
+					"vid": 101,
+					"name": "vlan101",
+					"fabric": "fabric-2",
+					"fabric_id": 2,
+					"mtu": 1500,
+					"dhcp_on": false
+				},
+				"cidr": "10.10.0.0/16"
+			},
+			{
+				"id": 12,
+				"name": "subnet-az1-2",
+				"space": "az1",
+				"vlan": {
+					"id": 102,
+					"vid": 102,
+					"name": "vlan102",
+					"fabric": "fabric-2",
+					"fabric_id": 2,
+					"mtu": 9000,
+					"dhcp_on": true
+				},
+				"cidr": "172.16.10.0/24"
+			}
+		]
+	}
+]
